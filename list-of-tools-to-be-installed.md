@@ -122,7 +122,39 @@ Job3: 03_mlapp_deploy_to_k8s
 ###################################
  - kubectl get nodes
  - kubectl get pods
+ - kubectl get pods -A
+ - kubectl get svc -A
  - kubectl apply -f mlapp-deployment.yaml
  - kubectl apply -f mlapp-service.yaml
  - kubectl delete -f mlapp-deployment
  - kubectl port-forward svc/rental-price-predictor-service 5000:5000
+
+
+###################################
+# Kind Commands
+###################################
+
+$ curl.exe -Lo kind-windows-amd64.exe https://kind.sigs.k8s.io/dl/v0.8.1/kind-windows-amd64
+$ Move-Item .\kind-windows-amd64.exe c:\kind\kind.exe
+
+$ kind
+$ kind create cluster --name main-kind-k8s-cluster
+$ kind get clusters
+$ kind delete cluster main-kind-k8s-cluster
+
+###################################
+Deploying Kubeflow Pipelines 
+###################################
+$ export PIPELINE_VERSION=2.2.0
+$ kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$PIPELINE_VERSION"
+$ kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io
+$ kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/env/platform-agnostic?ref=$PIPELINE_VERSION"
+
+
+$ kubectl port-forward -n kubeflow svc/ml-pipeline-ui 8080:80
+Open your browser and resolve http://localhost:8080
+
+
+
+
+kubectl apply -k "github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=2.2.0"
